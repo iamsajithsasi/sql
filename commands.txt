@@ -1,0 +1,148 @@
+-- sample db https://www.mysqltutorial.org/wp-content/uploads/2018/03/mysqlsampledatabase.zip
+-- USE classicmodels;
+-- SELECT * 
+-- FROM classicmodels.customers 
+-- WHERE customerNumber = 103
+-- ORDER BY customerNumber;
+
+-- SELECT creditLimit / 100 AS 'Credit Percentage'
+-- FROM classicmodels.customers;
+
+-- SELECT DISTINCT state from classicmodels.customers
+
+-- SELECT * from classicmodels.customers WHERE creditLimit < 200
+-- SELECT * from classicmodels.customers WHERE state = 'ct'
+
+-- SELECT * FROM classicmodels.orders WHERE orderDate > '2005-01-01' AND NOT status = 'shipped';
+-- SELECT * FROM classicmodels.orders WHERE orderDate BETWEEN '2004-01-01' AND '2005-01-01';
+
+-- SELECT * FROM classicmodels.customers WHERE contactFirstName LIKE '____n';
+-- SELECT * FROM classicmodels.customers WHERE contactFirstName LIKE '%ean';
+-- SELECT * FROM classicmodels.customers WHERE contactFirstName REGEXP '^s|an$|zek';
+-- SELECT * FROM classicmodels.customers WHERE contactFirstName REGEXP '[ABC]e'; 
+-- SELECT * FROM classicmodels.customers WHERE state IS NOT NULL LIMIT 2, 3;
+
+-- IN is used for multiple or ex: WHERE state = 'ct' OR state = 'fl' 
+-- SELECT * from classicmodels.customers WHERE state IN ('ct', 'fl');
+
+-- ___n -> sean; %ean -> sean; [EFG]e or [E-G]e -> ee or fe or ge; ^The -> Thebegining; end$ -> Theend; LIMIT limit, offset
+
+-- inner join
+
+-- SELECT customerNumber, customerName, firstName AS salesRepName 
+-- FROM classicmodels.customers c
+-- JOIN classicmodels.employees e 
+-- ON c.salesRepEmployeeNumber = e.employeeNumber;
+
+-- self join
+-- SELECT e.firstName AS emplyeeName , f.firstName AS reportingTo 
+-- FROM classicmodels.employees e
+-- JOIN classicmodels.employees f
+-- ON e.reportsTo = f.employeeNumber
+
+-- join multiple table
+-- SELECT c.customerNumber, c.contactFirstName, productName, quantityOrdered * priceEach AS price, o.orderNumber, o.status
+-- FROM classicmodels.customers c
+-- JOIN classicmodels.orders o ON c.customerNumber = o.customerNumber
+-- JOIN classicmodels.payments p ON c.customerNumber = p.customerNumber
+-- JOIN classicmodels.orderdetails d ON d.orderNumber = o.orderNumber
+-- JOIN classicmodels.products pr ON pr.productCode = d.productCode
+
+-- compound join conditions for multiple primary key
+-- Ex: JOIN classicmodels.orderdetails d ON d.orderNumber = o.orderNumber AND d.productNumber  = o.productNumber
+
+-- USING to replace same key name ex: c.customerNumber = o.customerNumber
+-- SELECT *
+-- FROM classicmodels.customers c
+-- JOIN classicmodels.orders o USING (customerNumber)
+
+-- left join
+-- SELECT c.contactFirstName, o.orderNumber, o.status, d.productCode
+-- FROM classicmodels.customers c
+-- LEFT JOIN classicmodels.orders o USING (customerNumber)
+-- JOIN classicmodels.orderdetails d USING (orderNumber)
+
+-- Aggregate and UNION
+-- SELECT 
+-- 	'Quantity less than 25' AS Quantity,
+-- 	COUNT(DISTINCT orderNumber) AS COUNT,
+--     MAX(priceEach) AS Max,
+--     MIN(priceEach) AS Min,
+--     SUM(priceEach) AS Sum,
+--     AVG(priceEach) AS AVG
+-- FROM classicmodels.orderdetails
+-- WHERE quantityOrdered <= 25
+-- UNION
+-- SELECT 
+-- 	'Quantity greater than 25' AS Quantity,
+-- 	COUNT(DISTINCT orderNumber) AS COUNT,
+--     MAX(priceEach) AS Max,
+--     MIN(priceEach) AS Min,
+--     SUM(priceEach) AS Sum,
+--     AVG(priceEach) AS AVG
+-- FROM classicmodels.orderdetails
+-- WHERE quantityOrdered > 25;
+
+-- having is used to refer column after group execution 
+-- Note: having can only refer to item in select clause. ex: below price is in select clause, cant use customerNumber etc
+-- SELECT p.productName, sum(priceEach) AS price
+--     FROM classicmodels.orderdetails o
+--     JOIN classicmodels.products p ON o.productCode = p.productCode
+-- 	GROUP BY o.productCode
+--     HAVING price > 5000
+--     ORDER BY price DESC;
+
+
+-- CREATE, INSERT, DELETE, UPDATE
+-- DROP TABLE IF EXISTS sampleTable;
+-- CREATE TABLE sampleTable (
+-- 	`id` INT NOT NULL AUTO_INCREMENT,
+--     `name` VARCHAR(50) DEFAULT 'N/A' UNIQUE,
+--     PRIMARY KEY(`id`)
+-- );
+-- CREATE TABLE sampleTabletwo (
+-- 	`id` INT NOT NULL AUTO_INCREMENT,
+--     `name` VARCHAR(50) DEFAULT 'N/A' UNIQUE,
+--     PRIMARY KEY(`id`)
+-- );
+
+-- INSERT INTO classicmodels.sampleTable(name, phone) 
+-- 	VALUES	('john', DEFAULT);
+
+-- Heirarchial rows -> get last insert id and update
+-- INSERT INTO classicmodels.sampletabletwo(ID, name)
+-- 	VALUES	(LAST_INSERT_ID(), "test");
+
+-- Copy table into table
+-- CREATE Table testtable AS 
+-- SELECT * from classicmodels.sampletable;
+
+-- Copy data into table using INSERT
+-- INSERT INTO classicmodels.testtable
+-- 	SELECT * from classicmodels.sampletable WHERE phone IS NOT NULL;
+
+-- UPDATE classicmodels.sampletable
+-- 	SET phone = '5678', name = DEFAULT WHERE ID = 11 ;
+
+-- using sub queries -> find id and then update
+-- UPDATE onetable
+-- 	SET phone = '5678', name = 'Mark '
+--     WHERE id = (
+-- 		SELECT id FROM anothertable WHERE name = 'N/A'
+-- 	);
+
+-- DELETE FROM classicmodels.sampletable WHERE id = 11;
+
+-- using sub queries
+-- SELECT p.productName from classicmodels.products p
+-- 	WHERE p.productCode NOT IN (
+-- 		SELECT DISTINCT o.productCode from classicmodels.orderdetails o	
+--     );
+
+-- select customers who have ordered S10_1678
+-- select c.contactFirstName, p.productName from classicmodels.orders o
+-- 	JOIN classicmodels.orderdetails od USING (orderNumber)
+-- 	JOIN classicmodels.customers c USING (customerNumber)
+-- 	JOIN classicmodels.products p USING (productCode)
+-- 	WHERE productCode = 'S10_1678'
+-- ;
