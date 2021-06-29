@@ -1,0 +1,86 @@
+
+\l -> list database
+\c <myDb> -> connect database
+\d <myTable> -> show table data
+\i <SQLFILENAME> -> run command via file (this file will have create table and multiple inserts)
+
+CREATE DATABASE <myDb>;
+DROP DATABASE <myDb>;
+DROP TABLE <myDb>;
+
+CREATE TABLE myTable (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+first_name VARCHAR(255) NOT NULL,
+last_name VARCHAR(255) NOT NULL,
+email VARCHAR(255),
+date DATE NOT NULL
+);
+
+INSERT INTO myTable ( first_name, last_name, email, date )
+VALUES ( 'sajith', 's', 'email@wx.com', date '2021-03-02' );
+
+get sample data from mockaro
+\i /Users/user/Downloads/Personal/Projects/postgress-sql/sample.sql
+
+SELECT _ FROM myTable;
+SELECT first_name, last_name FROM myTable;
+SELECT _ from myTable ORDER BY email DESC; // ASC
+SELECT DISTINCT country FROM myTable;
+SELECT _ FROM myTable WHERE country='Canada' AND (gender = 'Female' OR gender= 'Male');
+SELECT _ FROM myTable WHERE country IN ('Canada', 'India') AND gender IN ('Male', 'Female');
+SELECT _ FROM myTable WHERE birth_date BETWEEN '2020-01-01' AND '2020-03-31';
+SELECT _ FROM myTable WHERE email LIKE '%google%';
+SELECT _ FROM myTable WHERE email LIKE '****\_\_\_\_****%@google%'; // \_ denotes minimum characters present
+SELECT _ FROM myTable WHERE country ILIKE 'ind%'; // case insensitive search
+SELECT _ from myTable OFFSET 5 LIMIT 10;
+SELECT _ from myTable OFFSET 5 FETCH FIRST 5 ROW ONLY;
+
+SELECT country, COUNT(_) FROM myTable GROUP BY country; // aggregation
+SELECT country,COUNT(_) FROM myTable GROUP BY country HAVING COUNT(\*) > 50;
+SELECT MIN(price) from myTable;
+SELECT MAX(price) from myTable;
+SELECT AVG(price) from myTable;
+SELECT ROUND(AVG(price)) from myTable;
+SELECT SUM(price) from myTable GROUP BY brand;
+
+SELECT id, make, model, price, price \* 0.1 AS discount_10 from myTable // calculate
+
+SELECT COALESCE(email, 'NA') from myTable
+SELECT COALESCE(email, 'NA'), count(\*) from myTable group by email;
+SELECT NOW()::DATE - INTERVAL '1 YEAR'; // 10 YEARS
+SELECT EXTRACT(MONTH FROM NOW()); // DAY YEAR CENTURY DOW
+SELECT birth_date, AGE(NOW(), birth_date) AS age FROM myTable;
+
+ALTER TABLE myTable DROP CONSTRAINT <myTable_pkey>
+ALTER TABLE myTable ADD PRIMARY KEY(id);
+ALTER TABLE myTable ADD UNIQUE(email); // system generated constraint name
+ALTER TABLE myTable ADD CONSTRAINT unique_email_address UNIQUE(email); // custom name
+ALTER TABLE myTable ADD CONSTRAINT gender_format CHECK(gender= 'Male' OR gender='Female');
+
+DELETE from myTable WHERE id='1';
+
+UPDATE myTable SET first_name = 'sajth', email = 'test@g.c' WHERE id='1';
+
+INSERT INTO PERSON (....) VALUES(....) ON CONFLICT (email) DO NOTHING;
+INSERT INTO PERSON (....) VALUES(....) ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email; // others...
+
+// Relational Table
+
+CREATE TABLE tableA (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+first_name VARCHAR(255) NOT NULL,
+last_name VARCHAR(255) NOT NULL,
+email VARCHAR(255),
+date DATE NOT NULL
+car_id BIGINT REFERENCES tableB(id),
+UNIQUE(car_id)
+);
+
+CREATE TABLE tableB (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+car VARCHAR(255) NOT NULL,
+);
+
+UPDATE tableA SET car_id="1" WHERE id="1";
+
+// Inner Joins
