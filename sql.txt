@@ -5,6 +5,8 @@
 -- WHERE customerNumber = 103
 -- ORDER BY customerNumber;
 
+-- SELECT contactFirstName, CONCAT(country_code, phone_number) AS phone_number FROM customers;
+
 -- SELECT creditLimit / 100 AS 'Credit Percentage'
 -- FROM classicmodels.customers;
 
