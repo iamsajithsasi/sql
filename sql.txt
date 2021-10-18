@@ -141,6 +141,11 @@
 -- 		SELECT DISTINCT o.productCode from classicmodels.orderdetails o	
 --     );
 
+-- using sub queries
+-- SELECT CONCAT("There are a total of ", m.OcCount," doctors.") FROM (
+--    SELECT COUNT(Occupation) AS OcCount FROM OCCUPATIONS WHERE Occupation = 'Doctor'
+-- ) AS m;
+
 -- select customers who have ordered S10_1678
 -- select c.contactFirstName, p.productName from classicmodels.orders o
 -- 	JOIN classicmodels.orderdetails od USING (orderNumber)
