@@ -151,5 +151,11 @@
 -- 	JOIN classicmodels.orderdetails od USING (orderNumber)
 -- 	JOIN classicmodels.customers c USING (customerNumber)
 -- 	JOIN classicmodels.products p USING (productCode)
--- 	WHERE productCode = 'S10_1678'
--- ;
+-- 	WHERE productCode = 'S10_1678';
+
+// procedures:
+-- 	CREATE PROCEDURE SelectAllCustomers @City nvarchar(30)
+-- 	AS
+-- 	SELECT * FROM Customers WHERE City = @City
+-- 	GO;
+-- 	EXEC SelectAllCustomers @City = 'London';
