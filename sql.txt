@@ -163,3 +163,7 @@
 // SET DATA
 -- SET @USER_NAME:='SAJITH';
 -- SELECT @USER_NAME FROM INFORMATION_SCHEMA.TABLES;
+
+// Misc
+select tweet_id from Tweets where Length(content) > 15
+select tweet_id from Tweets where Length(content) <> 10 # <> not equal to
